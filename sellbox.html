@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SellBox 使用文档</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root{
+    --ink:#10140e;
+    --soil:#191f15;
+    --soil-2:#212a1b;
+    --line:#39432f;
+    --wheat:#d5b264;
+    --wheat-soft:#e6ce94;
+    --grass:#88a562;
+    --paper:#efe9db;
+    --paper-dim:#b5b0a0;
+    --warn:#c4793f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1100px 520px at 82% -6%, rgba(213,178,100,.10), transparent 62%),
+      radial-gradient(800px 460px at 8% 102%, rgba(136,165,98,.08), transparent 66%),
+      var(--ink);
+    color:var(--paper);
+    font-family:"Noto Sans SC","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    line-height:1.8;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 26px}
+  h1,h2,h3,.num{font-family:"Noto Serif SC",Georgia,"Songti SC",serif}
+  .mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+
+  nav{position:sticky;top:0;z-index:20;background:rgba(16,20,14,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+  nav .brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.05em;font-size:15px}
+  nav .brand i{width:8px;height:8px;background:var(--wheat);display:inline-block;transform:rotate(45deg)}
+  nav ul{display:flex;gap:20px;list-style:none;font-size:13px;color:var(--paper-dim)}
+  nav ul a{color:inherit;text-decoration:none;border-bottom:1px solid transparent;padding-bottom:2px}
+  nav ul a:hover{color:var(--wheat);border-color:var(--wheat)}
+  @media(max-width:800px){nav ul{display:none}}
+
+  header{padding:78px 0 56px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(30px,4.6vw,50px);line-height:1.22;font-weight:700}
+  h1 span{color:var(--wheat)}
+  .lede{margin-top:20px;max-width:640px;font-size:16.5px;color:var(--paper-dim);font-weight:300}
+  .facts{display:flex;flex-wrap:wrap;gap:30px;margin-top:44px;padding-top:26px;border-top:1px solid var(--line)}
+  .fact .num{font-size:22px;color:var(--wheat);font-weight:600}
+  .fact .cap{font-size:12px;color:var(--paper-dim);margin-top:2px}
+
+  section{padding:66px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:clamp(22px,2.9vw,30px);font-weight:700;line-height:1.35;margin-bottom:12px}
+  .sub{color:var(--paper-dim);max-width:680px;font-weight:300;font-size:15.5px}
+  .who{font-size:12px;letter-spacing:.16em;color:var(--grass);margin-bottom:12px}
+
+  .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:30px}
+  .fx{background:var(--soil);padding:20px 18px}
+  .fx .n{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--wheat)}
+  .fx p{font-size:13.5px;color:var(--paper-dim);margin-top:8px}
+  @media(max-width:900px){.flow{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.flow{grid-template-columns:1fr}}
+
+  .tabs{display:flex;gap:6px;margin-top:26px;flex-wrap:wrap}
+  .tab{
+    background:transparent;color:var(--paper-dim);border:1px solid var(--line);
+    padding:8px 16px;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s;
+  }
+  .tab.on{background:var(--soil-2);color:var(--wheat);border-color:var(--wheat)}
+  .cmd-table{width:100%;border-collapse:collapse;font-size:13.5px}
+  .cmd-table th,.cmd-table td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  .cmd-table th{font-size:11.5px;letter-spacing:.1em;color:var(--grass);font-weight:500}
+  .cmd-table td.cmd{font-family:"JetBrains Mono",monospace;font-size:12.6px;color:var(--wheat-soft)}
+  .cmd-table td.cmd .arg{color:#77826a}
+  .cmd-table td.desc{color:var(--paper-dim)}
+  .cmd-table tr:hover td{background:rgba(33,42,27,.5)}
+  .perm{font-size:11.5px;color:#77826a;font-family:"JetBrains Mono",monospace}
+  .panel{display:none}
+  .panel.on{display:block}
+
+  .mech{margin-top:30px;display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+  .m{background:var(--soil);padding:26px 24px;display:grid;grid-template-columns:150px 1fr;gap:24px}
+  .m .k{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--grass)}
+  .m h3{font-size:17px;margin-bottom:8px}
+  .m p{font-size:14px;color:var(--paper-dim)}
+  .m .fx-line{margin-top:10px;font-family:"JetBrains Mono",monospace;font-size:12.6px;color:var(--wheat-soft)}
+  @media(max-width:760px){.m{grid-template-columns:1fr;gap:8px}}
+
+  .sim{margin-top:28px;border:1px solid var(--line);background:var(--soil)}
+  .sim-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--paper-dim)}
+  .sim-body{display:grid;grid-template-columns:310px 1fr}
+  .sim-form{padding:20px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:14px}
+  label{font-size:12.5px;color:var(--paper-dim);display:block;margin-bottom:5px}
+  select,input[type=number]{width:100%;background:var(--soil-2);color:var(--paper);border:1px solid var(--line);padding:8px 10px;font-size:14px;font-family:inherit;outline:none}
+  select:focus,input:focus{border-color:var(--wheat)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--paper-dim)}
+  .chk input{width:15px;height:15px;accent-color:var(--wheat)}
+  .sim-out{padding:20px;display:flex;flex-direction:column}
+  .out-row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .out-row:last-of-type{border-bottom:none}
+  .out-row .lbl{color:var(--paper-dim)}
+  .out-row .val{font-family:"JetBrains Mono",monospace;font-size:15px}
+  .out-row .val.hi{color:var(--wheat);font-size:20px;font-weight:600}
+  .out-row .val.bad{color:var(--warn)}
+  .note{margin-top:12px;font-size:12.5px;color:var(--paper-dim);border-left:2px solid var(--line);padding-left:12px}
+  .params{border-top:1px solid var(--line);padding-top:12px}
+  .params summary{font-size:12.5px;color:var(--paper-dim);cursor:pointer;display:flex;justify-content:space-between}
+  .params summary::-webkit-details-marker{display:none}
+  .params[open] summary .pm{color:var(--grass)}
+  .params .pm{color:var(--wheat);font-family:"JetBrains Mono",monospace}
+  .p-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .p-grid input{padding:6px 8px;font-size:13px}
+  .p-grid label{font-size:11.5px}
+  @media(max-width:860px){.sim-body{grid-template-columns:1fr}.sim-form{border-right:none;border-bottom:1px solid var(--line)}}
+
+  .deploy{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px}
+  .d{background:var(--soil);padding:24px 20px}
+  .d .n{font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--wheat);letter-spacing:.14em}
+  .d h3{font-size:16px;margin:6px 0 8px}
+  .d p{font-size:13.5px;color:var(--paper-dim)}
+  @media(max-width:860px){.deploy{grid-template-columns:1fr}}
+
+  pre{margin-top:20px;background:#0c100a;border:1px solid var(--line);padding:16px 18px;overflow:auto;font-family:"JetBrains Mono",monospace;font-size:12.6px;line-height:1.9;color:#cbd2c0}
+  pre b{color:var(--wheat);font-weight:600}
+  pre i{color:#6a775c;font-style:normal}
+
+  .deps{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}
+  .dep{font-family:"JetBrains Mono",monospace;font-size:11.8px;color:var(--paper-dim);border:1px solid var(--line);padding:3px 9px}
+
+  table.perf{width:100%;border-collapse:collapse;margin-top:26px;font-size:13.5px}
+  table.perf th,table.perf td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+  table.perf th{font-size:11.5px;letter-spacing:.1em;color:var(--grass);font-weight:500}
+  table.perf td .mono{color:var(--wheat)}
+
+  .faq{margin-top:26px;border-top:1px solid var(--line)}
+  details{border-bottom:1px solid var(--line);padding:18px 0}
+  summary{list-style:none;display:flex;justify-content:space-between;gap:16px;font-size:15px;cursor:pointer;color:var(--paper)}
+  summary::-webkit-details-marker{display:none}
+  summary .pm{color:var(--wheat);font-family:"JetBrains Mono",monospace}
+  details[open] summary .pm{color:var(--grass)}
+  details p{margin-top:10px;font-size:14px;color:var(--paper-dim);max-width:720px}
+
+  footer{padding:56px 0 74px}
+  .box{border:1px solid var(--line);background:linear-gradient(180deg,var(--soil-2),var(--soil));padding:34px 30px}
+  .box h2{margin-bottom:8px}
+  .box p{color:var(--paper-dim);font-size:14.5px;max-width:600px}
+  .foot{margin-top:38px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-size:12px;color:#6a775c}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><i></i>SellBox</div>
+    <ul>
+      <li><a href="#howto">怎么用</a></li>
+      <li><a href="#cmds">指令</a></li>
+      <li><a href="#mech">定价规则</a></li>
+      <li><a href="#sim">试算</a></li>
+      <li><a href="#deploy">部署</a></li>
+      <li><a href="#faq">问答</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <h1>出货箱：把收成<span>就地卖成钱</span></h1>
+    <p class="lede">
+      玩家在田边放一个箱子，作物投进去，价格按当天行情算，金币到账，出一张收据。
+      就这样。剩下的问题是服主要定价、要限速、要留流水，那部分下面都写了。
+    </p>
+    <div class="facts">
+      <div class="fact"><div class="num">63</div><div class="cap">条默认价格</div></div>
+      <div class="fact"><div class="num">5.6 µs</div><div class="cap">单笔数据库开销</div></div>
+      <div class="fact"><div class="num">0.85 ms</div><div class="cap">打开价格界面</div></div>
+      <div class="fact"><div class="num">90 天</div><div class="cap">流水保留</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 怎么用 ===== -->
+<section id="howto">
+  <div class="wrap">
+    <div class="who">玩家视角</div>
+    <h2>用一个箱子卖东西，五步</h2>
+    <p class="sub">这一段可以直接抄进你服的帮助文档，玩家看一遍就懂，不需要额外解释。</p>
+    <div class="flow">
+      <div class="fx"><div class="n">01</div><p>拿到出货箱。管理员发放，或者按服务器配方合成。</p></div>
+      <div class="fx"><div class="n">02</div><p>放在自家田边、棚子里，或者仓库门口。位置随你。</p></div>
+      <div class="fx"><div class="n">03</div><p>蹲下右键绑定。绑定之后这个箱子归你，别人动不了。</p></div>
+      <div class="fx"><div class="n">04</div><p>把作物丢进去。已定价的会被收，没定价的留在箱里。</p></div>
+      <div class="fx"><div class="n">05</div><p>等结算。立刻结算就当场到账，定时结算到点一起给，附一张收据。</p></div>
+    </div>
+    <p class="note">
+      箱子界面右下角那本书是收据，写着这一轮每样东西卖了多少件、单价多少、进账多少。
+      想先看行情，打 <span class="mono">/sellbox prices</span>，或者点箱子界面里的信息格。
+    </p>
+  </div>
+</section>
+
+<!-- ===== 指令 ===== -->
+<section id="cmds">
+  <div class="wrap">
+    <div class="who">指令手册</div>
+    <h2>三条给玩家，其余都是你的</h2>
+    <p class="sub">主命令 <span class="mono">/sellbox</span>，别名 <span class="mono">/sb</span>。按使用者分了四组，点标签切换。</p>
+
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-p="player">玩家</button>
+      <button class="tab" data-p="admin">管理员</button>
+      <button class="tab" data-p="price">价格维护</button>
+      <button class="tab" data-p="debug">调试自测</button>
+    </div>
+
+    <div class="panel on" id="p-player">
+      <table class="cmd-table">
+        <thead><tr><th>指令</th><th>作用</th><th>权限</th></tr></thead>
+        <tbody>
+          <tr><td class="cmd">/sellbox prices</td><td class="desc">打开今日收购价。按种类排，同种作物的普通、银星、金星挨在一起，带分页。</td><td class="perm">sellbox.use</td></tr>
+          <tr><td class="cmd">/sellbox log <span class="arg">[页码]</span></td><td class="desc">查自己的交易流水，每页 10 条，倒序。</td><td class="perm">sellbox.use</td></tr>
+          <tr><td class="cmd">/sellbox pending</td><td class="desc">看有没有离线期间没发下来的钱。有的话上线会自动补。</td><td class="perm">sellbox.use</td></tr>
+          <tr><td class="cmd">/sellbox help</td><td class="desc">列出所有子命令。玩家打错东西时会看到这个。</td><td class="perm">—</td></tr>
+        </tbody>
+      </table>
+      <p class="note">玩家其实不需要指令。放箱子、投东西、看界面就够了，指令只是留给想查账的人。</p>
+    </div>
+
+    <div class="panel" id="p-admin">
+      <table class="cmd-table">
+        <thead><tr><th>指令</th><th>作用</th><th>权限</th></tr></thead>
+        <tbody>
+          <tr><td class="cmd">/sellbox give <span class="arg">&lt;玩家&gt; [数量]</span></td><td class="desc">直接给玩家出货箱物品。数量默认 1，上限受 <span class="mono">box.max-per-player</span> 约束。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox list <span class="arg">&lt;玩家&gt;</span></td><td class="desc">列出这个玩家名下所有箱子，含世界与坐标。排查"箱子被谁占了"从这开始。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox log <span class="arg">&lt;玩家&gt; [页码]</span></td><td class="desc">查任意玩家的流水。对账、查刷钱、处理纠纷都用这个。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox pending <span class="arg">[玩家]</span></td><td class="desc">查待补发队列。不填玩家就是全服。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox total <span class="arg">&lt;玩家&gt;</span></td><td class="desc">看这名玩家的累计卖出、今日已用、上限、剩余，以及四档阶梯里他站在哪一档。</td><td class="perm">sellbox.use</td></tr>
+          <tr><td class="cmd">/sellbox total <span class="arg">&lt;玩家&gt; 5000000</span></td><td class="desc">把累计卖出直接设成 500 万。设的是绝对值，之后他继续卖还会往上加。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox total <span class="arg">&lt;玩家&gt; +500000</span></td><td class="desc">在当前基础上加 50 万。带 <span class="mono">+</span> 或 <span class="mono">-</span> 都按增量算，用来做补偿或扣罚。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox top <span class="arg">[页数]</span></td><td class="desc">成交排行，按累计净额排。做榜单、做周报都行。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox reload</td><td class="desc">重载 config、价格表、文案。改完配置就打这个，不用重启。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox config check</td><td class="desc">打印当前生效的模块开关与关键参数。排查"为什么没结算"从这开始。</td><td class="perm">sellbox.admin</td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        <span class="mono">total</span> 改的是"累计卖出净额"，也就是决定日额度档位的那个值。
+        它不动流水日志，只记一个差值，对账的时候流水仍然干净。
+      </p>
+    </div>
+
+    <div class="panel" id="p-price">
+      <table class="cmd-table">
+        <thead><tr><th>指令</th><th>作用</th><th>权限</th></tr></thead>
+        <tbody>
+          <tr><td class="cmd">/sellbox setprice <span class="arg">&lt;单价&gt;</span></td><td class="desc">给手里的物品定价。写进 prices.yml，立刻生效。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox setprice <span class="arg">&lt;单价&gt; &lt;物品id&gt;</span></td><td class="desc">给指定 id 定价，不用手持。适合批量调某一类作物。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox pricing</td><td class="desc">打开定价表。可搜索、可批量、可排序，比手改 yml 快。</td><td class="perm">sellbox.admin</td></tr>
+          <tr><td class="cmd">/sellbox prices</td><td class="desc">以玩家视角看今日实价，含季节倍率与销量折价。定完价用它自查。</td><td class="perm">sellbox.use</td></tr>
+        </tbody>
+      </table>
+      <p class="note">
+        定价口径建议只留一个：按"玩家一分钟能产出多少金币"定，别按"这东西看起来值多少"定。
+        前者能直接跟你服里刷怪塔、挖矿、钓鱼的时薪对齐，后者定完一定会漏。
+      </p>
+    </div>
+
+    <div class="panel" id="p-debug">
+      <table class="cmd-table">
+        <thead><tr><th>指令</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td class="cmd">/sellbox debug fill <span class="arg">&lt;x y z&gt; &lt;id&gt; &lt;数量&gt;</span></td><td class="desc">往指定坐标的箱子里塞货。测价格、测结算不用真的去种。</td></tr>
+          <tr><td class="cmd">/sellbox debug sell <span class="arg">&lt;x y z&gt;</span></td><td class="desc">立刻结算这一个箱子。验证"到点会不会真的给钱"。</td></tr>
+          <tr><td class="cmd">/sellbox debug quote <span class="arg">&lt;x y z&gt;</span></td><td class="desc">只算价不结算，打印每件物品的单价与合计。核价用。</td></tr>
+          <tr><td class="cmd">/sellbox debug seasonfactor <span class="arg">&lt;季节&gt; &lt;id&gt;</span></td><td class="desc">查某个物品在某季节的倍率。确认 0.8 / 1.2 到底命中没命中。</td></tr>
+          <tr><td class="cmd">/sellbox debug decay <span class="arg">&lt;id&gt;</span></td><td class="desc">查这个物品今天卖了多少、当前折价系数、全服排名。</td></tr>
+          <tr><td class="cmd">/sellbox debug setseason <span class="arg">&lt;季节&gt; [世界]</span></td><td class="desc">临时改季节，测换季逻辑用。测完记得改回来。</td></tr>
+          <tr><td class="cmd">/sellbox debug itemname <span class="arg">&lt;id&gt;</span></td><td class="desc">查这个 id 解析出的显示名，顺带打印词条数量。名字显示不对先跑这个。</td></tr>
+          <tr><td class="cmd">/sellbox debug place <span class="arg">&lt;x y z&gt; [owner]</span></td><td class="desc">在指定坐标放一个箱子。清理残留记录、补回被误删的箱子都行。</td></tr>
+          <tr><td class="cmd">/sellbox debug remove <span class="arg">&lt;x y z&gt;</span></td><td class="desc">移除箱子并释放绑定名额。</td></tr>
+          <tr><td class="cmd">/sellbox debug bind <span class="arg">&lt;x y z&gt; &lt;玩家&gt;</span></td><td class="desc">强制把箱子绑给某个人，处理"箱子没主人"的情况。</td></tr>
+          <tr><td class="cmd">/sellbox debug receipt <span class="arg">&lt;x y z&gt;</span></td><td class="desc">重新生成收据书，玩家弄丢了可以补。</td></tr>
+          <tr><td class="cmd">/sellbox debug deposit <span class="arg">&lt;玩家&gt; &lt;金额&gt;</span></td><td class="desc">走经济插件打钱，确认 Vault 通路是否正常。</td></tr>
+          <tr><td class="cmd">/sellbox debug paypending <span class="arg">&lt;玩家&gt;</span></td><td class="desc">手动把待补发队列结清。</td></tr>
+          <tr><td class="cmd">/sellbox debug balance <span class="arg">&lt;玩家&gt;</span></td><td class="desc">查余额与待补发笔数。排查"钱没到账"的第二步。</td></tr>
+        </tbody>
+      </table>
+      <p class="note">调试指令不写流水，也不动玩家额度，放心用。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 定价规则 ===== -->
+<section id="mech">
+  <div class="wrap">
+    <div class="who">服主视角</div>
+    <h2>价格是怎么算出来的</h2>
+    <p class="sub">一次结算的价钱是四层乘出来的。知道顺序，调参数时就知道该动哪个。</p>
+    <div class="mech">
+      <div class="m">
+        <div class="k">BASE</div>
+        <div>
+          <h3>基础价</h3>
+          <p>prices.yml 里那一条。这是你唯一需要认真定的数字，后面三层都是修正。</p>
+          <div class="fx-line">items: customcrops:onion: 420</div>
+        </div>
+      </div>
+      <div class="m">
+        <div class="k">SEASON</div>
+        <div>
+          <h3>季节倍率</h3>
+          <p>当季 0.8，反季 1.2。规则写在 season.categories，match 支持通配，一条 customcrops:onion* 同时盖住普通、银星、金星，不用写三遍。</p>
+          <div class="fx-line">当季 ×0.8　反季 ×1.2　无季节作物 ×1.0</div>
+        </div>
+      </div>
+      <div class="m">
+        <div class="k">DECAY</div>
+        <div>
+          <h3>销量折价</h3>
+          <p>同一样东西当天卖得越多，单价越低，到下限为止。这是压住大农场无限出货的那一层，也是让玩法从堆地变成轮作的那一层。</p>
+          <div class="fx-line">每件 −0.1%，下限 70%（rate-per-item / min-factor）</div>
+        </div>
+      </div>
+      <div class="m">
+        <div class="k">TAX</div>
+        <div>
+          <h3>税与额度</h3>
+          <p>结算扣 5% 税，再计入当日额度。额度是阶梯的：卖得越多，上限越高。超出部分两种处理，停或者允许透支，建议停。</p>
+          <div class="fx-line">5万 → 20万 → 50万 → 100万（按累计净额解锁）</div>
+        </div>
+      </div>
+      <div class="m">
+        <div class="k">WHEN</div>
+        <div>
+          <h3>什么时候给钱</h3>
+          <p>instant 是投进去立刻卖；scheduled 是箱里先囤着，游戏内到点一次性结算。定时模式给农业服一个天亮收账的节奏，也顺手把结算压到你挑的时间点，方便观察。</p>
+          <div class="fx-line">scheduled-times: ["06:00"]　世界时间 0 = 早上 6:00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 试算 ===== -->
+<section id="sim">
+  <div class="wrap">
+    <div class="who">动手算</div>
+    <h2>定价之前，先跑一遍数</h2>
+    <p class="sub">把件数拉满，看平均单价掉到多少、税后还剩多少、够不够撞上限。数字全都可以换成你服的，别照抄我的。</p>
+
+    <div class="sim">
+      <div class="sim-head">
+        <span>收益试算 · 所有数字都可以改</span>
+        <span class="mono" id="seasonNow">—</span>
+      </div>
+      <div class="sim-body">
+        <div class="sim-form">
+          <div>
+            <label>作物（选完会把示例价填进下面的基础价）</label>
+            <select id="crop"></select>
+          </div>
+          <div class="row2">
+            <div>
+              <label>基础价（改成你服的）</label>
+              <input type="number" id="base" value="420" min="1" step="1">
+            </div>
+            <div>
+              <label>品质</label>
+              <select id="quality">
+                <option value="norm">普通</option>
+                <option value="silver">银星</option>
+                <option value="golden">金星</option>
+              </select>
+            </div>
+          </div>
+          <div class="row2">
+            <div>
+              <label>当日件数</label>
+              <input type="number" id="qty" value="1200" min="1" max="20000" step="50">
+            </div>
+            <div>
+              <label>季节</label>
+              <select id="season">
+                <option value="in">当季</option>
+                <option value="out">反季</option>
+                <option value="none">不分季节</option>
+              </select>
+            </div>
+          </div>
+
+          <details class="params">
+            <summary>参数按你服的配置改<span class="pm">+</span></summary>
+            <div class="p-grid">
+              <div><label>当季倍率</label><input type="number" id="pIn" value="0.8" step="0.01"></div>
+              <div><label>反季倍率</label><input type="number" id="pOut" value="1.2" step="0.01"></div>
+              <div><label>银星倍率</label><input type="number" id="pSilver" value="1.8" step="0.01"></div>
+              <div><label>金星倍率</label><input type="number" id="pGolden" value="3.2" step="0.01"></div>
+              <div><label>每件折价</label><input type="number" id="pRate" value="0.001" step="0.0005"></div>
+              <div><label>折价下限</label><input type="number" id="pMin" value="0.7" step="0.01"></div>
+              <div><label>税率 %</label><input type="number" id="pTax" value="5" step="0.5"></div>
+              <div><label>VIP 倍率</label><input type="number" id="pVip" value="1.2" step="0.01"></div>
+            </div>
+            <div style="margin-top:10px">
+              <label>日上限（你要算的那一档）</label>
+              <input type="number" id="pCap" value="1000000" step="10000">
+            </div>
+          </details>
+
+          <div class="chk">
+            <input type="checkbox" id="vip">
+            <label for="vip" style="margin:0">带 VIP 倍率</label>
+          </div>
+          <div class="note">
+            示例价是我服的一版数字，只作参考。换成你自己的基础价和参数，结果就跟着变。
+          </div>
+        </div>
+        <div class="sim-out">
+          <div class="out-row"><span class="lbl">首件单价</span><span class="val" id="oFirst">—</span></div>
+          <div class="out-row"><span class="lbl">末件单价</span><span class="val" id="oLast">—</span></div>
+          <div class="out-row"><span class="lbl">平均单价</span><span class="val" id="oAvg">—</span></div>
+          <div class="out-row"><span class="lbl">毛收入</span><span class="val" id="oGross">—</span></div>
+          <div class="out-row"><span class="lbl">税后到账</span><span class="val" id="oNet">—</span></div>
+          <div class="out-row"><span class="lbl">撞上限需卖</span><span class="val" id="oCap">—</span></div>
+          <div class="note" id="oNote"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 部署 ===== -->
+<section id="deploy">
+  <div class="wrap">
+    <div class="who">安装</div>
+    <h2>装起来大概十分钟</h2>
+    <p class="sub">一个 jar 加两组配置，钱走 Vault，不动你现有的经济插件。</p>
+    <div class="deploy">
+      <div class="d"><div class="n">01</div><h3>丢 jar</h3><p>放 plugins 里启动。首次会生成 config.yml、prices.yml、messages_zh_CN.yml 和一个 sellbox.db。</p></div>
+      <div class="d"><div class="n">02</div><h3>改价格</h3><p>照着 prices.yml 的格式换掉作物 id 和单价。id 要跟你在 CraftEngine 或原版里的实际 id 对上，对不上就不收。</p></div>
+      <div class="d"><div class="n">03</div><h3>先自己试一轮</h3><p>给自己发一个，塞点货，debug quote 看价，debug sell 真结算一次。通了再发给玩家。</p></div>
+    </div>
+
+    <div class="deps">
+      <span class="dep">Paper 1.21+</span>
+      <span class="dep">JDK 21+</span>
+      <span class="dep">Vault + 经济插件</span>
+      <span class="dep">CraftEngine（可选）</span>
+      <span class="dep">SQLite（内置）</span>
+    </div>
+
+<pre><i># config.yml 里真正要改的几段</i>
+<b>sell:</b>
+  mode: <b>scheduled</b>
+  scheduled-times: ["<b>06:00</b>"]
+
+<b>tax:</b> {percent: <b>5.0</b>}
+
+<b>decay:</b>
+  rate-per-item: <b>0.001</b>
+  min-factor: <b>0.70</b>
+
+<b>daily-limit:</b>
+  reset-at: "00:00"
+  tiers:
+    - {min-total: 0,       amount: <b>50000</b>}
+    - {min-total: 300000,  amount: <b>200000</b>}
+    - {min-total: 1500000, amount: <b>500000</b>}
+    - {min-total: 4000000, amount: <b>1000000</b>}
+
+<b>season:</b>
+  categories:
+    SPRING:
+      - match: "<b>customcrops:onion*</b>"
+        multiplier: 0.8</pre>
+    <p class="note">
+      季节那条的 <span class="mono">*</span> 是通配，一条盖住普通、银星、金星三种品质。
+      变异形态（giant_tomato 之类）的 id 不含原作物名，得单独写一条，不然它永远按 1.0 倍算。
+    </p>
+  </div>
+</section>
+
+<!-- ===== 性能 ===== -->
+<section id="perf">
+  <div class="wrap">
+    <div class="who">开销</div>
+    <h2>实测数字，以及唯一要注意的地方</h2>
+    <p class="sub">JDK 25 加内置 SQLite，在测试机上跑出来的。写库全在异步线程，主线程只付入队成本。</p>
+    <table class="perf">
+      <thead><tr><th>路径</th><th>实测</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>单笔交易的数据库入队</td><td class="mono">5.6 µs</td><td>可以当没有</td></tr>
+        <tr><td>异步写线程排空能力</td><td class="mono">16,374 行/秒</td><td>正常服不可能积压</td></tr>
+        <tr><td>打开今日收购价</td><td class="mono">0.85 ms</td><td>含 63 条 id × 52 条规则匹配</td></tr>
+        <tr><td>读累计销售额</td><td class="mono">2.3–9.2 ms</td><td>每个玩家只查一次，之后走内存</td></tr>
+        <tr><td>定时结算，200 个满箱</td><td class="mono">40–160 ms</td><td>会占一个 tick，见下</td></tr>
+      </tbody>
+    </table>
+    <p class="note">
+      唯一要留意的是定时结算：到点那一瞬间会把全服箱子挨个结完，200 箱大概占 40 到 160 毫秒，
+      玩家会觉得顿一下。箱子过 300 就该考虑分批，或者让不同世界的结算时刻错开。
+      instant 模式没这问题，代价是玩家一投就卖，少了点节奏。
+    </p>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq">
+  <div class="wrap">
+    <div class="who">问答</div>
+    <h2>装之前你大概会问的</h2>
+    <div class="faq">
+      <details>
+        <summary>不装 CraftEngine 能用吗？<span class="pm">+</span></summary>
+        <p>能。装了 CE 才有自定义方块外观和自定义物品识别，银星、金星、变异形态可以分开定价；不装就退化成原版方块加原版物品，价格表里把 CE 的 id 换成原版 id 就行，其余照跑。</p>
+      </details>
+      <details>
+        <summary>会跟我现有的经济插件打架吗？<span class="pm">+</span></summary>
+        <p>不会。发钱只调 Vault 的 deposit，不接管货币、不改余额。哪天换经济插件，这边不用动。</p>
+      </details>
+      <details>
+        <summary>能和商店插件一起用吗？<span class="pm">+</span></summary>
+        <p>能，但建议只让它负责卖。商店管买，种子、肥料、设备那些；出货箱管卖，作物回收。两边都做买卖，价格会互相打脸。</p>
+      </details>
+      <details>
+        <summary>玩家离线时正好结算了怎么办？<span class="pm">+</span></summary>
+        <p>进待补发队列，上线自动补。也可以 <span class="mono">/sellbox pending</span> 查，<span class="mono">/sellbox debug paypending</span> 手动补。</p>
+      </details>
+      <details>
+        <summary>数据怎么备份？<span class="pm">+</span></summary>
+        <p>就一个 sellbox.db，SQLite 加 WAL。停服拷走就行。流水默认存 90 天，<span class="mono">log.retention-days</span> 改长改短都行。</p>
+      </details>
+      <details>
+        <summary>我只想当回收站，不想搞定时结算。<span class="pm">+</span></summary>
+        <p>把 <span class="mono">sell.mode</span> 改成 instant，投进去立刻卖。定时结算只是可选的一层，不是必须。</p>
+      </details>
+      <details>
+        <summary>价格定多少才不亏？<span class="pm">+</span></summary>
+        <p>别按"这东西看起来值多少"定。先算玩家一分钟能收多少件、折价之后单价多少，再跟刷怪塔、挖矿、钓鱼的时薪对齐。上面那个试算器就是干这个的。</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="box">
+      <h2>它能干什么，不能干什么</h2>
+      <p>
+        它能替掉"背一背包跑去商店点卖出"这一段，能给价格加上季节和供需，能给你一套查账工具。
+        它不会替你平衡经济。价格表是你定的，定歪了它只会把歪放得更大，而且放得很快。
+      </p>
+    </div>
+    <div class="foot">
+      <span>SellBox · Paper 农业出货箱</span>
+      <span>作者 yuuka / Tako</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const CROPS = [
+  {id:"onion",        name:"洋葱",       base:420, seasons:["春","秋"]},
+  {id:"green_bean",   name:"四季豆",     base:420, seasons:["春","秋"]},
+  {id:"leek",         name:"韭葱",       base:420, seasons:["春","秋"]},
+  {id:"cabbage",      name:"卷心菜",     base:420, seasons:["春","秋"]},
+  {id:"lettuce",      name:"生菜",       base:420, seasons:["春","秋"]},
+  {id:"cucumber",     name:"黄瓜",       base:455, seasons:["春","夏"]},
+  {id:"pineapple",    name:"菠萝",       base:445, seasons:["夏"]},
+  {id:"corn",         name:"玉米",       base:400, seasons:["春","夏","秋"]},
+  {id:"sweet_potato", name:"红薯",       base:400, seasons:["春","夏","秋"]},
+  {id:"tomato",       name:"番茄",       base:185, seasons:["春","夏","秋"]},
+  {id:"eggplant",     name:"茄子",       base:125, seasons:["春","夏","秋"]},
+  {id:"pitaya",       name:"火龙果",     base:130, seasons:["夏","秋"]},
+  {id:"pepper",       name:"辣椒",       base:90,  seasons:["春","夏","秋"]},
+  {id:"redpacket",    name:"摇钱树红包", base:45,  seasons:["冬"]},
+  {id:"crimson",      name:"绯红栓菌",   base:400, seasons:[]},
+  {id:"warped",       name:"诡异发光菌", base:400, seasons:[]},
+  {id:"virelia",      name:"幽碧兰",     base:400, seasons:[]},
+  {id:"virelo",       name:"堇幽果",     base:400, seasons:[]}
+];
+
+const el = id => document.getElementById(id);
+const sel = {
+  crop: el("crop"), base: el("base"), quality: el("quality"), qty: el("qty"),
+  season: el("season"), vip: el("vip")
+};
+const par = {
+  pIn: el("pIn"), pOut: el("pOut"), pSilver: el("pSilver"), pGolden: el("pGolden"),
+  pRate: el("pRate"), pMin: el("pMin"), pTax: el("pTax"), pVip: el("pVip"), pCap: el("pCap")
+};
+
+CROPS.forEach(c => {
+  const o = document.createElement("option");
+  o.value = c.id;
+  o.textContent = c.name + (c.seasons.length ? "（" + c.seasons.join("、") + "）" : "（无季节）");
+  sel.crop.appendChild(o);
+});
+sel.crop.value = "onion";
+sel.base.value = 420;
+
+const fmt = n => n.toLocaleString("zh-CN", {maximumFractionDigits:0});
+const num = (input, def) => {
+  const v = parseFloat(input.value);
+  return Number.isFinite(v) ? v : def;
+};
+
+/* 换作物时把示例价填进去，用户改了就按用户的值算 */
+sel.crop.addEventListener("change", () => {
+  const crop = CROPS.find(c => c.id === sel.crop.value);
+  if (crop) sel.base.value = crop.base;
+  compute();
+});
+
+function compute(){
+  const crop = CROPS.find(c => c.id === sel.crop.value) || CROPS[0];
+  const base = Math.max(1, num(sel.base, crop.base));
+  const qty = Math.max(1, Math.min(20000, parseInt(sel.qty.value) || 1));
+
+  const rate = Math.max(0, num(par.pRate, 0.001));
+  const minF = Math.min(1, Math.max(0, num(par.pMin, 0.7)));
+  const tax  = Math.max(0, Math.min(100, num(par.pTax, 5))) / 100;
+  const cap  = Math.max(1, num(par.pCap, 1000000));
+
+  const qualityKey = sel.quality.value;
+  const qMult = qualityKey === "silver" ? num(par.pSilver, 1.8)
+              : qualityKey === "golden" ? num(par.pGolden, 3.2) : 1;
+
+  const seasonMult = sel.season.value === "in"  ? num(par.pIn, 0.8)
+                   : sel.season.value === "out" ? num(par.pOut, 1.2) : 1;
+  const vipMult = sel.vip.checked ? num(par.pVip, 1.2) : 1;
+
+  const unit0 = base * seasonMult * qMult * vipMult;
+
+  let gross = 0, first = 0, last = 0;
+  for (let i = 0; i < qty; i++){
+    const f = Math.max(minF, 1 - rate * i);
+    const p = unit0 * f;
+    if (i === 0) first = p;
+    last = p;
+    gross += p;
+  }
+  const net = gross * (1 - tax);
+
+  el("oFirst").textContent = fmt(first) + " / 件";
+  el("oLast").textContent  = fmt(last) + " / 件";
+  el("oAvg").textContent   = fmt(gross / qty) + " / 件";
+  el("oGross").textContent = fmt(gross);
+  const netEl = el("oNet");
+  netEl.textContent = fmt(net);
+  netEl.className = "val " + (net > cap ? "bad" : "hi");
+
+  // 撞上限需要卖多少件：按本品最高单价情形（最好季节 + 最高品质 + VIP）
+  const bestSeason = Math.max(num(par.pIn, 0.8), num(par.pOut, 1.2), 1);
+  const bestQ = Math.max(1, num(par.pSilver, 1.8), num(par.pGolden, 3.2));
+  const unitMax = base * bestSeason * bestQ * num(par.pVip, 1.2);
+  let acc = 0, n = 0;
+  while (acc < cap && n < 60000){
+    const f = Math.max(minF, 1 - rate * n);
+    acc += unitMax * f * (1 - tax);
+    n++;
+  }
+  el("oCap").textContent = fmt(n) + " 件";
+
+  const note = el("oNote");
+  if (net > cap){
+    note.textContent = "这一批税后已经超过日上限 " + fmt(cap) + "，超出的会被拦掉（on-exceed: stop），拆两天卖。";
+  } else {
+    const remainPct = (net / cap * 100).toFixed(1);
+    note.textContent = "这批占上限的 " + remainPct + "%。卖到 " + fmt(qty) + " 件时单价被压到 "
+      + (Math.max(minF, 1 - rate * (qty - 1)) * 100).toFixed(0) + "%（下限 " + (minF * 100).toFixed(0) + "%）。";
+  }
+
+  el("seasonNow").textContent =
+    (qualityKey === "norm" ? "普通" : qualityKey === "silver" ? "银星" : "金星")
+    + " · " + (sel.season.value === "in" ? "当季" : sel.season.value === "out" ? "反季" : "不分季节")
+    + " · 基础价 " + fmt(base);
+}
+
+[sel.base, sel.qty, sel.quality, sel.season, sel.vip,
+ par.pIn, par.pOut, par.pSilver, par.pGolden, par.pRate, par.pMin, par.pTax, par.pVip, par.pCap]
+  .forEach(input => {
+    input.addEventListener("input", compute);
+    input.addEventListener("change", compute);
+  });
+
+compute();
+
+document.querySelectorAll(".tab").forEach(tb => {
+  tb.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("on"));
+    tb.classList.add("on");
+    document.getElementById("p-" + tb.dataset.p).classList.add("on");
+  });
+});
+
+document.querySelectorAll("details").forEach(d => {
+  d.addEventListener("toggle", () => {
+    if (d.open){
+      document.querySelectorAll("details").forEach(o => { if (o !== d) o.open = false; });
+    }
+  });
+});
+</script>
+</body>
+</html>
